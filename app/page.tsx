@@ -114,7 +114,7 @@ function DessertCard({ dessert }: { dessert: Dessert }) {
         <h2 className="text-xl font-semibold text-slate-900">{dessert.title}</h2>
         <p className="text-sm text-slate-700">{dessert.description}</p>
 
-        <button onClick={likeDessert} className="w-full rounded-full bg-rose-100 px-4 py-2 text-slate-900">
+        <button onClick={likeDessert} className="w-full rounded-full bg-rose-200 px-4 py-2 text-slate-900 font-medium">
           Like
         </button>
 
@@ -176,28 +176,37 @@ function NewDessertIdeaForm() {
 
   return (
     <div className="rounded-3xl bg-white p-5 shadow-sm">
-      <h2 className="text-xl font-semibold">Request a new dessert</h2>
-      <input
-        className="mt-3 w-full rounded-xl border px-3 py-2"
-        placeholder="Your name"
-        value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
-      />
-      <input
-        className="mt-3 w-full rounded-xl border px-3 py-2"
-        placeholder="Phone or WeChat"
-        value={contact}
-        onChange={(e) => setContact(e.target.value)}
-      />
-      <textarea
-        className="mt-3 w-full rounded-xl border px-3 py-2"
-        placeholder="What would you like me to make?"
-        value={requestText}
-        onChange={(e) => setRequestText(e.target.value)}
-      />
-      <button onClick={submitIdea} className="mt-4 w-full rounded-full bg-black px-4 py-2 text-white">
-        Send request
-      </button>
-    </div>
+      <h2 className="text-xl font-semibold text-slate-900">
+        提出新的甜品创意
+      </h2>
+
+    <input
+      className="mt-3 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400"
+      placeholder="你的名字"
+      value={customerName}
+      onChange={(e) => setCustomerName(e.target.value)}
+    />
+
+    <input
+      className="mt-3 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400"
+      placeholder="联系方式（微信/电话）"
+      value={contact}
+      onChange={(e) => setContact(e.target.value)}
+    />
+
+    <textarea
+      className="mt-3 w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400"
+      placeholder="比如：抹茶提拉米苏 / 开心果巴斯克 / 芋泥盒子蛋糕"
+      value={requestText}
+      onChange={(e) => setRequestText(e.target.value)}
+    />
+
+    <button
+      onClick={submitIdea}
+      className="mt-4 w-full rounded-full bg-black px-4 py-2 text-white"
+    >
+      提交创意
+    </button>
+  </div>
   )
 }
