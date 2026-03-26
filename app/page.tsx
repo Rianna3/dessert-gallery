@@ -119,31 +119,25 @@ function DessertCard({ dessert }: { dessert: Dessert }) {
         </button>
 
         <input
-          className="w-full rounded-xl border px-3 py-2"
-          placeholder="Your name"
+          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400"
+          placeholder="微信名"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <input
-          className="w-full rounded-xl border px-3 py-2"
-          placeholder="Phone or WeChat"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-        />
-        <input
-          className="w-full rounded-xl border px-3 py-2"
+          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
         <input
-          className="w-full rounded-xl border px-3 py-2"
+          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400"
           placeholder="Available pickup time"
           value={pickup}
           onChange={(e) => setPickup(e.target.value)}
         />
         <textarea
-          className="w-full rounded-xl border px-3 py-2"
+          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400"
           placeholder="Extra notes"
           value={requestText}
           onChange={(e) => setRequestText(e.target.value)}
