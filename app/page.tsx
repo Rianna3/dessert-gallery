@@ -1,65 +1,203 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useEffect, useMemo, useState } from 'react'
+
+type Dessert = {
+  id: string
+  category: 'Box Cake' | 'Birthday Cake' | 'Basque' | 'Other Desserts'
+  title: string
+  description: string
+  image_url: string
+}
+
+const categories = ['Box Cake', 'Birthday Cake', 'Basque', 'Other Desserts'] as const
+
+export default function HomePage() {
+  const [desserts, setDesserts] = useState<Dessert[]>([])
+  const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>('Box Cake')
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    fetch('/api/desserts')
+      .then((res) => res.json())
+      .then((data) => setDesserts(data))
+  }, [])
+
+  const filtered = useMemo(() => {
+    return desserts.filter(
+      (d) =>
+        d.category === activeCategory &&
+        (d.title.toLowerCase().includes(search.toLowerCase()) ||
+          d.description.toLowerCase().includes(search.toLowerCase()))
+    )
+  }, [desserts, activeCategory, search])
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen bg-rose-50 px-4 py-6 md:px-8">
+      <div className="mx-auto max-w-6xl">
+        <h1 className="text-3xl font-semibold md:text-5xl">小杜·露丽屋</h1>
+        <p className="mt-3 text-slate-600">
+          自制甜品展示区，可浏览、点赞、预约取餐，还可以提出你想吃的新甜品！
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`rounded-full px-4 py-2 ${
+                activeCategory === cat ? 'bg-black text-white' : 'bg-white'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <input
+          className="mt-4 w-full rounded-full border bg-white px-4 py-3"
+          placeholder="Search desserts"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((dessert) => (
+            <DessertCard key={dessert.id} dessert={dessert} />
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mt-10">
+          <NewDessertIdeaForm />
         </div>
-      </main>
+      </div>
+    </main>
+  )
+}
+
+function DessertCard({ dessert }: { dessert: Dessert }) {
+  const [name, setName] = useState('')
+  const [contact, setContact] = useState('')
+  const [date, setDate] = useState('')
+  const [pickup, setPickup] = useState('')
+  const [requestText, setRequestText] = useState('')
+
+  async function likeDessert() {
+    await fetch('/api/like', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dessert_id: dessert.id, visitor_name: name || null }),
+    })
+    alert('Liked')
+  }
+
+  async function submitPickup() {
+    await fetch('/api/pickup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dessert_id: dessert.id,
+        customer_name: name,
+        contact,
+        wanted_date: date,
+        pickup_time: pickup,
+        notes: requestText,
+      }),
+    })
+    alert('Pickup request sent')
+  }
+
+  return (
+    <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
+      <img src={dessert.image_url} alt={dessert.title} className="aspect-[4/3] w-full object-cover" />
+      <div className="space-y-3 p-4">
+        <h2 className="text-xl font-semibold">{dessert.title}</h2>
+        <p className="text-sm text-slate-600">{dessert.description}</p>
+
+        <button onClick={likeDessert} className="w-full rounded-full bg-rose-100 px-4 py-2">
+          Like
+        </button>
+
+        <input
+          className="w-full rounded-xl border px-3 py-2"
+          placeholder="Your name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          className="w-full rounded-xl border px-3 py-2"
+          placeholder="Phone or WeChat"
+          value={contact}
+          onChange={(e) => setContact(e.target.value)}
+        />
+        <input
+          className="w-full rounded-xl border px-3 py-2"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <input
+          className="w-full rounded-xl border px-3 py-2"
+          placeholder="Available pickup time"
+          value={pickup}
+          onChange={(e) => setPickup(e.target.value)}
+        />
+        <textarea
+          className="w-full rounded-xl border px-3 py-2"
+          placeholder="Extra notes"
+          value={requestText}
+          onChange={(e) => setRequestText(e.target.value)}
+        />
+        <button onClick={submitPickup} className="w-full rounded-full bg-black px-4 py-2 text-white">
+          Submit pickup request
+        </button>
+      </div>
     </div>
-  );
+  )
+}
+
+function NewDessertIdeaForm() {
+  const [customerName, setCustomerName] = useState('')
+  const [contact, setContact] = useState('')
+  const [requestText, setRequestText] = useState('')
+
+  async function submitIdea() {
+    await fetch('/api/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customer_name: customerName,
+        contact,
+        request_text: requestText,
+      }),
+    })
+    alert('Idea submitted')
+  }
+
+  return (
+    <div className="rounded-3xl bg-white p-5 shadow-sm">
+      <h2 className="text-xl font-semibold">Request a new dessert</h2>
+      <input
+        className="mt-3 w-full rounded-xl border px-3 py-2"
+        placeholder="Your name"
+        value={customerName}
+        onChange={(e) => setCustomerName(e.target.value)}
+      />
+      <input
+        className="mt-3 w-full rounded-xl border px-3 py-2"
+        placeholder="Phone or WeChat"
+        value={contact}
+        onChange={(e) => setContact(e.target.value)}
+      />
+      <textarea
+        className="mt-3 w-full rounded-xl border px-3 py-2"
+        placeholder="What would you like me to make?"
+        value={requestText}
+        onChange={(e) => setRequestText(e.target.value)}
+      />
+      <button onClick={submitIdea} className="mt-4 w-full rounded-full bg-black px-4 py-2 text-white">
+        Send request
+      </button>
+    </div>
+  )
 }
