@@ -35,7 +35,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-rose-50 px-4 py-6 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-semibold md:text-5xl">小杜·露丽屋</h1>
+        <h1 className="text-3xl font-semibold text-slate-900 md:text-5xl">小杜·露丽屋</h1>
         <p className="mt-3 text-slate-600">
           自制甜品展示区，可浏览、点赞、预约取餐，还可以提出你想吃的新甜品！
         </p>
@@ -46,7 +46,7 @@ export default function HomePage() {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full px-4 py-2 ${
-                activeCategory === cat ? 'bg-black text-white' : 'bg-white'
+                activeCategory === cat ? 'bg-black text-white' : 'bg-white text-slate-800 border border-slate-200'
               }`}
             >
               {cat}
@@ -55,7 +55,7 @@ export default function HomePage() {
         </div>
 
         <input
-          className="mt-4 w-full rounded-full border bg-white px-4 py-3"
+          className="mt-4 w-full rounded-full border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400"
           placeholder="Search desserts"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -111,10 +111,10 @@ function DessertCard({ dessert }: { dessert: Dessert }) {
     <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
       <img src={dessert.image_url} alt={dessert.title} className="aspect-[4/3] w-full object-cover" />
       <div className="space-y-3 p-4">
-        <h2 className="text-xl font-semibold">{dessert.title}</h2>
-        <p className="text-sm text-slate-600">{dessert.description}</p>
+        <h2 className="text-xl font-semibold text-slate-900">{dessert.title}</h2>
+        <p className="text-sm text-slate-700">{dessert.description}</p>
 
-        <button onClick={likeDessert} className="w-full rounded-full bg-rose-100 px-4 py-2">
+        <button onClick={likeDessert} className="w-full rounded-full bg-rose-100 px-4 py-2 text-slate-900">
           Like
         </button>
 
